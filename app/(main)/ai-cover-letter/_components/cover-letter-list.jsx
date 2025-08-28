@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { Edit2, Eye, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -24,9 +25,20 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { deleteCoverLetter } from "@/actions/cover-letter";
+import ClientOnly from "@/components/ui/client-only";
 
 export default function CoverLetterList({ coverLetters }) {
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const formatDate = (dateString) => {
+    if (!mounted) return "Loading...";
+    return format(new Date(dateString), "PPP");
+  };
 
   const handleDelete = async (id) => {
     try {
@@ -61,9 +73,11 @@ export default function CoverLetterList({ coverLetters }) {
                 <CardTitle className="text-xl gradient-title">
                   {letter.jobTitle} at {letter.companyName}
                 </CardTitle>
-                <CardDescription>
-                  Created {format(new Date(letter.createdAt), "PPP")}
-                </CardDescription>
+                <ClientOnly fallback={<CardDescription>Created Loading...</CardDescription>}>
+                  <CardDescription>
+                    Created {formatDate(letter.createdAt)}
+                  </CardDescription>
+                </ClientOnly>
               </div>
               <div className="flex space-x-2">
                 <AlertDialog>

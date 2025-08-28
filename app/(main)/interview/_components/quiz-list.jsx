@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -18,18 +18,29 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import QuizResult from "./quiz-result";
+import ClientOnly from "@/components/ui/client-only";
 
 export default function QuizList({ assessments }) {
   const router = useRouter();
   const [selectedQuiz, setSelectedQuiz] = useState(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const formatDate = (dateString) => {
+    if (!mounted) return "Loading...";
+    return format(new Date(dateString), "MMMM dd, yyyy HH:mm");
+  };
 
   return (
     <>
-      <Card>
+      <Card className="hover:shadow-lg transition-shadow">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="gradient-title text-3xl md:text-4xl">
+              <CardTitle className="gradient-text text-3xl md:text-4xl">
                 Recent Quizzes
               </CardTitle>
               <CardDescription>
@@ -46,21 +57,20 @@ export default function QuizList({ assessments }) {
             {assessments?.map((assessment, i) => (
               <Card
                 key={assessment.id}
-                className="cursor-pointer hover:bg-muted/50 transition-colors"
+                className="cursor-pointer hover:bg-muted/50 transition-colors hover:shadow-md"
                 onClick={() => setSelectedQuiz(assessment)}
               >
                 <CardHeader>
-                  <CardTitle className="gradient-title text-2xl">
+                  <CardTitle className="gradient-text text-2xl">
                     Quiz {i + 1}
                   </CardTitle>
                   <CardDescription className="flex justify-between w-full">
                     <div>Score: {assessment.quizScore.toFixed(1)}%</div>
-                    <div>
-                      {format(
-                        new Date(assessment.createdAt),
-                        "MMMM dd, yyyy HH:mm"
-                      )}
-                    </div>
+                    <ClientOnly fallback={<div>Loading...</div>}>
+                      <div>
+                        {formatDate(assessment.createdAt)}
+                      </div>
+                    </ClientOnly>
                   </CardDescription>
                 </CardHeader>
                 {assessment.improvementTip && (

@@ -73,10 +73,18 @@ body {
 
 @layer utilities {
   .gradient {
-    @apply bg-gradient-to-b from-gray-400 via-gray-200 to-gray-600;
+    @apply bg-gradient-to-b from-gray-400 via-gray-200 to-gray-600 dark:from-gray-600 dark:via-gray-400 dark:to-gray-200;
   }
   .gradient-title {
     @apply gradient font-extrabold tracking-tighter text-transparent bg-clip-text pb-2 pr-2;
+  }
+  
+  .gradient-text {
+    @apply bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent;
+  }
+  
+  .gradient-bg {
+    @apply bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950 dark:to-purple-950;
   }
 }
 
@@ -103,13 +111,22 @@ body {
   height: 100%;
   background: linear-gradient(
       to right,
+      rgba(0, 0, 0, 0.1) 1px,
+      transparent 1px
+    ),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.dark .grid-background {
+  background: linear-gradient(
+      to right,
       rgba(255, 255, 255, 0.1) 1px,
       transparent 1px
     ),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-  background-size: 50px 50px;
-  pointer-events: none;
-  z-index: -1;
 }
 
 .grid-background::before {
@@ -119,5 +136,9 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
+  background: radial-gradient(circle, transparent, rgba(0, 0, 0, 0.1));
+}
+
+.dark .grid-background::before {
   background: radial-gradient(circle, transparent, rgba(0, 0, 0, 0.9));
 }

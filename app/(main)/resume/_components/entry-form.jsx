@@ -20,6 +20,7 @@ import { Sparkles, PlusCircle, X, Pencil, Save, Loader2 } from "lucide-react";
 import { improveWithAI } from "@/actions/resume";
 import { toast } from "sonner";
 import useFetch from "@/hooks/use-fetch";
+import ClientOnly from "@/components/ui/client-only";
 
 const formatDisplayDate = (dateString) => {
   if (!dateString) return "";
@@ -29,6 +30,11 @@ const formatDisplayDate = (dateString) => {
 
 export function EntryForm({ type, entries, onChange }) {
   const [isAdding, setIsAdding] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const {
     register,
@@ -101,6 +107,13 @@ export function EntryForm({ type, entries, onChange }) {
     });
   };
 
+  const formatDateDisplay = (item) => {
+    if (!mounted) return "Loading...";
+    return item.current
+      ? `${item.startDate} - Present`
+      : `${item.startDate} - ${item.endDate}`;
+  };
+
   return (
     <div className="space-y-4">
       <div className="space-y-4">
@@ -120,11 +133,11 @@ export function EntryForm({ type, entries, onChange }) {
               </Button>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">
-                {item.current
-                  ? `${item.startDate} - Present`
-                  : `${item.startDate} - ${item.endDate}`}
-              </p>
+              <ClientOnly fallback={<p className="text-sm text-muted-foreground">Loading...</p>}>
+                <p className="text-sm text-muted-foreground">
+                  {formatDateDisplay(item)}
+                </p>
+              </ClientOnly>
               <p className="mt-2 text-sm whitespace-pre-wrap">
                 {item.description}
               </p>

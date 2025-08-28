@@ -5,9 +5,11 @@ import { getUserOnboardingStatus } from "@/actions/user";
 
 export default async function OnboardingPage() {
   // Check if user is already onboarded
-  const { isOnboarded } = await getUserOnboardingStatus();
+  const onboardingStatus = await getUserOnboardingStatus();
 
-  if (isOnboarded) {
+  // If there's an error or user is not found, still show the onboarding form
+  // This allows new users to complete onboarding
+  if (onboardingStatus.isOnboarded) {
     redirect("/dashboard");
   }
 
