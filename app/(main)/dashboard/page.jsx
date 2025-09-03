@@ -1,7 +1,14 @@
+import { Suspense } from "react";
 import { getIndustryInsights } from "@/actions/dashboard";
 import DashboardView from "./_component/dashboard-view";
+import { DashboardSkeleton } from "./_component/dashboard-skeleton";
 import { getUserOnboardingStatus } from "@/actions/user";
 import { redirect } from "next/navigation";
+
+async function DashboardContent() {
+  const insights = await getIndustryInsights();
+  return <DashboardView insights={insights} />;
+}
 
 export default async function DashboardPage() {
   const onboardingStatus = await getUserOnboardingStatus();
@@ -12,11 +19,11 @@ export default async function DashboardPage() {
     redirect("/onboarding");
   }
 
-  const insights = await getIndustryInsights();
-
   return (
     <div className="container mx-auto">
-      <DashboardView insights={insights} />
+      <Suspense fallback={<DashboardSkeleton />}>
+        <DashboardContent />
+      </Suspense>
     </div>
   );
 }

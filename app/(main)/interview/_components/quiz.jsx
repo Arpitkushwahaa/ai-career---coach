@@ -21,6 +21,7 @@ export default function Quiz() {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState([]);
   const [showExplanation, setShowExplanation] = useState(false);
+  const [sessionId, setSessionId] = useState(null);
 
   const {
     loading: generatingQuiz,
@@ -34,6 +35,11 @@ export default function Quiz() {
     data: resultData,
     setData: setResultData,
   } = useFetch(saveQuizResult);
+
+  // Generate a unique session ID for each quiz attempt
+  const generateSessionId = () => {
+    return `quiz_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+  };
 
   useEffect(() => {
     if (quizData) {
@@ -80,12 +86,32 @@ export default function Quiz() {
     setCurrentQuestion(0);
     setAnswers([]);
     setShowExplanation(false);
+    setSessionId(generateSessionId());
     generateQuizFn();
     setResultData(null);
   };
 
+  const handleStartQuiz = () => {
+    setSessionId(generateSessionId());
+    generateQuizFn();
+  };
+
   if (generatingQuiz) {
-    return <BarLoader className="mt-4" width={"100%"} color="gray" />;
+    return (
+      <div className="mx-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Generating Your Quiz...</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground mb-4">
+              Creating fresh questions tailored to your industry and skills...
+            </p>
+            <BarLoader className="mt-4" width={"100%"} color="gray" />
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   // Show results if quiz is completed
@@ -106,12 +132,22 @@ export default function Quiz() {
         <CardContent>
           <p className="text-muted-foreground">
             This quiz contains 10 questions specific to your industry and
-            skills. Take your time and choose the best answer for each question.
+            skills. Each time you take the quiz, you'll get different questions
+            to help you prepare thoroughly.
           </p>
+          <div className="mt-4 p-4 bg-muted/50 rounded-lg">
+            <h4 className="font-medium mb-2">What to expect:</h4>
+            <ul className="text-sm text-muted-foreground space-y-1">
+              <li>• Fresh questions every time</li>
+              <li>• Industry-specific content</li>
+              <li>• Detailed explanations</li>
+              <li>• Personalized improvement tips</li>
+            </ul>
+          </div>
         </CardContent>
         <CardFooter>
-          <Button onClick={generateQuizFn} className="w-full">
-            Start Quiz
+          <Button onClick={handleStartQuiz} className="w-full">
+            Start New Quiz
           </Button>
         </CardFooter>
       </Card>
@@ -119,13 +155,29 @@ export default function Quiz() {
   }
 
   const question = quizData[currentQuestion];
+  const quizCategory = quizData[0]?.category;
+  const quizDifficulty = quizData[0]?.difficulty;
 
   return (
     <Card className="mx-2">
       <CardHeader>
-        <CardTitle>
-          Question {currentQuestion + 1} of {quizData.length}
-        </CardTitle>
+        <div className="flex justify-between items-center">
+          <div>
+            <CardTitle>
+              Question {currentQuestion + 1} of {quizData.length}
+            </CardTitle>
+            {quizCategory && quizDifficulty && (
+              <p className="text-sm text-muted-foreground mt-1">
+                Focus: {quizCategory} • Level: {quizDifficulty}
+              </p>
+            )}
+          </div>
+          {sessionId && (
+            <div className="text-xs text-muted-foreground">
+              Session: {sessionId.substring(0, 8)}...
+            </div>
+          )}
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         <p className="text-lg font-medium">{question.question}</p>
@@ -164,12 +216,13 @@ export default function Quiz() {
           disabled={!answers[currentQuestion] || savingResult}
           className="ml-auto"
         >
-          {savingResult && (
+          {savingResult ? (
             <BarLoader className="mt-4" width={"100%"} color="gray" />
+          ) : (
+            currentQuestion < quizData.length - 1
+              ? "Next Question"
+              : "Finish Quiz"
           )}
-          {currentQuestion < quizData.length - 1
-            ? "Next Question"
-            : "Finish Quiz"}
         </Button>
       </CardFooter>
     </Card>

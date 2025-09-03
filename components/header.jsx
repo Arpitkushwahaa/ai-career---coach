@@ -31,7 +31,7 @@ export default async function Header() {
   return (
     <header className="fixed top-0 w-full border-b bg-background/80 backdrop-blur-md z-50 supports-[backdrop-filter]:bg-background/60">
       <nav className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <Link href="/">
+        <Link href="/" className="hover:opacity-80 transition-opacity">
           <Image
             src={"/logo.png"}
             alt="Sensai Logo"
@@ -47,12 +47,12 @@ export default async function Header() {
             <Link href="/dashboard">
               <Button
                 variant="outline"
-                className="hidden md:inline-flex items-center gap-2"
+                className="hidden md:inline-flex items-center gap-2 hover:bg-primary hover:text-primary-foreground transition-colors"
               >
                 <LayoutDashboard className="h-4 w-4" />
                 Industry Insights
               </Button>
-              <Button variant="ghost" className="md:hidden w-10 h-10 p-0">
+              <Button variant="ghost" className="md:hidden w-10 h-10 p-0 hover:bg-primary hover:text-primary-foreground transition-colors">
                 <LayoutDashboard className="h-4 w-4" />
               </Button>
             </Link>
@@ -60,7 +60,7 @@ export default async function Header() {
             {/* Growth Tools Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button className="flex items-center gap-2">
+                <Button className="flex items-center gap-2 hover:bg-primary hover:text-primary-foreground transition-colors">
                   <StarsIcon className="h-4 w-4" />
                   <span className="hidden md:block">Growth Tools</span>
                   <ChevronDown className="h-4 w-4" />
@@ -68,7 +68,7 @@ export default async function Header() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuItem asChild>
-                  <Link href="/resume" className="flex items-center gap-2">
+                  <Link href="/resume" className="flex items-center gap-2 hover:bg-accent transition-colors">
                     <FileText className="h-4 w-4" />
                     Build Resume
                   </Link>
@@ -76,14 +76,14 @@ export default async function Header() {
                 <DropdownMenuItem asChild>
                   <Link
                     href="/ai-cover-letter"
-                    className="flex items-center gap-2"
+                    className="flex items-center gap-2 hover:bg-accent transition-colors"
                   >
                     <PenBox className="h-4 w-4" />
                     Cover Letter
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/interview" className="flex items-center gap-2">
+                  <Link href="/interview" className="flex items-center gap-2 hover:bg-accent transition-colors">
                     <GraduationCap className="h-4 w-4" />
                     Interview Prep
                   </Link>
@@ -94,7 +94,9 @@ export default async function Header() {
 
           <SignedOut>
             <SignInButton>
-              <Button variant="outline">Sign In</Button>
+              <Button variant="outline" className="hover:bg-primary hover:text-primary-foreground transition-colors">
+                Sign In
+              </Button>
             </SignInButton>
           </SignedOut>
 
